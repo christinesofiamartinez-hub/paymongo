@@ -18,22 +18,19 @@ exports.handler = async (event) => {
     const secretKey = "sk_test_QLomitvAMVqxoSofHAHp1okQ";
     const authHeader = `Basic ${Buffer.from(`${secretKey}:`).toString("base64")}`;
 
-    // Call PayMongo Payment Links API
+    // Call PayMongo Payment Links API (Corrected payload structure for /v1/payment_links)
     const response = await fetch("https://api.paymongo.com/v1/payment_links", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
+        Accept: "application/json",
         Authorization: authHeader,
       },
       body: JSON.stringify({
-        data: {
-          attributes: {
-            amount: amountInCentavos,
-            currency: "PHP",
-            description: description || "Short-Term Rental Stay",
-            remarks: "Host Pay PH - Netlify Test Link",
-          },
-        },
+        amount: amountInCentavos,
+        currency: "PHP",
+        description: description || "Short-Term Rental Stay",
+        remarks: "Host Pay PH - Netlify Test Link",
       }),
     });
 
@@ -46,7 +43,8 @@ exports.handler = async (event) => {
       };
     }
 
-    const paymentUrl = data.data.attributes.url;
+    // New API returns url directly at the root level of data object
+    const paymentUrl = data.data.url;
 
     return {
       statusCode: 200,
